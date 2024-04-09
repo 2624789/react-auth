@@ -5,12 +5,12 @@ import Typography from "@mui/material/Typography";
 
 import { ScreenTemplate } from "../features/ui";
 
-const Home: React.FC = () => {
+const Login: React.FC = () => {
   return <ScreenTemplate>
     <Typography variant="h3">
-      <Link to="/login">React Auth</Link>
+      <Link to="/">Login</Link>
     </Typography>
   </ScreenTemplate>;
 };
 
-export { Home };
+export { Login };
