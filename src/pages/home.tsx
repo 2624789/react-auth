@@ -8,7 +8,7 @@ import { ScreenTemplate } from "../features/ui";
 const Home: React.FC = () => {
   return <ScreenTemplate>
     <Typography variant="h3">
-      <Link to="/login">React Auth</Link>
+      <Link to="/login">go to login</Link>
     </Typography>
   </ScreenTemplate>;
 };
