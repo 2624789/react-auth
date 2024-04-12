@@ -3,17 +3,24 @@ import React from "react";
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Typography from "@mui/material/Typography";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 import { Copyright } from "../../ui";
 
+interface LoginInputs {
+  email: String;
+  password: String;
+}
+
 const LoginForm: React.FC = () => {
+  const {
+    register, formState: { errors }, handleSubmit
+  } = useForm<LoginInputs>();
+  const onSubmit: SubmitHandler<LoginInputs> = data => console.log(data);
+
   return (
     <Box
       sx={{
@@ -30,7 +37,6 @@ const LoginForm: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          maxWidth: 'sm',
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -41,7 +47,7 @@ const LoginForm: React.FC = () => {
         </Typography>
         <Box
           component="form"
-          onSubmit={() => console.log("login")}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate
           sx={{ mt: 1 }}
         >
@@ -51,23 +57,28 @@ const LoginForm: React.FC = () => {
             fullWidth
             id="email"
             label="Email Address"
-            name="email"
+            type="email"
             autoComplete="email"
             autoFocus
+            {...register("email", { required: true })}
+            error={errors.email?.type === "required"}
+            helperText={
+              errors.email?.type === "required" ? "Email is required." : null
+            }
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            {...register("password", { required: true })}
+            error={errors.password?.type === "required"}
+            helperText={
+              errors.password?.type === "required" ? "Password is required." : null
+            }
           />
           <Button
             type="submit"
@@ -77,18 +88,6 @@ const LoginForm: React.FC = () => {
           >
             Sign In
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link to="/">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link to="/">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
       <Copyright />
