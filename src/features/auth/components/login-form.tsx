@@ -9,17 +9,34 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useForm, SubmitHandler } from "react-hook-form";
 
 import { Copyright } from "../../ui";
+import useFormData, { FormDataItem } from "../../../hooks/useFormData";
+import Alert from "@mui/material/Alert";
 
 interface LoginInputs {
-  email: String;
-  password: String;
+  username: string;
+  password: string;
 }
 
 const LoginForm: React.FC = () => {
+  const { sendRequest, isLoading, error, clearError } = useFormData();
+
   const {
-    register, formState: { errors }, handleSubmit
+    register, formState: { errors }, handleSubmit, reset
   } = useForm<LoginInputs>();
-  const onSubmit: SubmitHandler<LoginInputs> = data => console.log(data);
+
+  const onSubmit: SubmitHandler<LoginInputs> = async data => {
+    clearError();
+    try {
+      const response = await sendRequest(
+        process.env.REACT_APP_API_URL + "/auth/login",
+        data as unknown as FormDataItem
+      );
+      console.log(response)
+    } catch (err) {
+      reset();
+      console.error(err);
+    }
+  };
 
   return (
     <Box
@@ -60,10 +77,10 @@ const LoginForm: React.FC = () => {
             type="email"
             autoComplete="email"
             autoFocus
-            {...register("email", { required: true })}
-            error={errors.email?.type === "required"}
+            {...register("username", { required: true })}
+            error={errors.username?.type === "required"}
             helperText={
-              errors.email?.type === "required" ? "Email is required." : null
+              errors.username?.type === "required" ? "Email is required." : null
             }
           />
           <TextField
@@ -86,8 +103,10 @@ const LoginForm: React.FC = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign In
+            {isLoading ? "Loading...": "Sign In"}
           </Button>
+          {error &&
+            <Alert severity="error" onClose={clearError}>{error}</Alert>}
         </Box>
       </Box>
       <Copyright />
