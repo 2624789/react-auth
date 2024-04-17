@@ -1,5 +1,6 @@
 import React from "react";
 
+import Alert from "@mui/material/Alert";
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -7,10 +8,11 @@ import TextField from '@mui/material/TextField';
 import Typography from "@mui/material/Typography";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { Copyright } from "../../ui";
 import useFormData, { FormDataItem } from "../../../hooks/useFormData";
-import Alert from "@mui/material/Alert";
+import { useAuthContext } from "../context/auth.provider";
 
 interface LoginInputs {
   username: string;
@@ -18,7 +20,10 @@ interface LoginInputs {
 }
 
 const LoginForm: React.FC = () => {
+  const navigate = useNavigate();
   const { sendRequest, isLoading, error, clearError } = useFormData();
+  const { login } = useAuthContext();
+  const { state } = useLocation();
 
   const {
     register, formState: { errors }, handleSubmit, reset
@@ -27,11 +32,21 @@ const LoginForm: React.FC = () => {
   const onSubmit: SubmitHandler<LoginInputs> = async data => {
     clearError();
     try {
-      const response = await sendRequest(
+      const response: any = await sendRequest(
         process.env.REACT_APP_API_URL + "/auth/login",
         data as unknown as FormDataItem
       );
-      console.log(response)
+      const {
+        is_admin: isAdmin,
+        name,
+        username,
+        access_token: value,
+        token_type: type,
+      } = response;
+      const user = { isAdmin, name, username };
+      const token = { value, type };
+      login(user, token);
+      navigate(state?.path || "/dashboard");
     } catch (err) {
       reset();
       console.error(err);
